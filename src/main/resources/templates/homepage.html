@@ -1,0 +1,95 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>FitCalc</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link href="webjars/bootstrap/5.0.0-beta2/css/bootstrap.min.css" rel="stylesheet" />
+        <link th:href="@{/styles/jBox.all.min.css}" rel="stylesheet" />
+        <link th:href="@{/styles/styles.css}" rel="stylesheet" />
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script th:src="@{/js/jBox.all.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/5.0.0-beta2/js/bootstrap.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/5.0.0-beta2/js/bootstrap.bundle.min.js}"></script>
+    </head>
+    <body>
+
+        <header class="p-3 mb-3 border-bottom">
+            <div class="container">
+                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                    <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
+                        <img id="imgLogo" src="#" th:src="@{/img/icons/icon_heart.svg}" alt="FitCalc" width="30" height="24" class="d-inline-block align-middle" />
+                        <strong>FitCalc</strong>
+                    </a>
+
+                    <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                        <!-- empty -->
+                    </ul>
+
+                    <div class="dropdown text-end">
+                        <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownLang" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img th:src="@{${'/img/icons/icon_flag_' + setLanguage.getCountry() + '.svg'}}" th:alt="${setLanguage.getCountry()}" height="24" />
+                        </a>
+                        <ul class="dropdown-menu text-small" aria-labelledby="dropdownLang">
+                            <li th:each="lang : ${@supportedLanguages}">
+                                <a th:class="${setLanguage.getLanguage() == lang.getLanguage()} ? 'dropdown-item disabled' : 'dropdown-item'" th:href="@{${'?lang=' + lang.getLanguage()}}">
+                                    <img th:src="@{${'/img/icons/icon_flag_' + lang.getCountry() + '.svg'}}" th:alt="${lang.getCountry()}" height="24" />
+                                    <span th:text="#{'lang.'+ ${lang.getLanguage()}}">Česky</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main role="main">
+            <div class="container">
+
+                <h4 th:text="#{footer.title.tools}"></h4>
+                <br />
+
+                <div class="card" style="width: 18rem;">
+                    <img th:src="@{/img/img_nutrients.jpg}" class="card-img-top" th:alt="#{page.calc.macro.title}">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="#{page.calc.macro.title}">Kalkulátor makroživin</h5>
+                        <p class="card-text" th:text="#{page.home.menu.tools.macrocalc.description}">Nástroj pro výpočet doporučeného denního příjmu a BMI.</p>
+                        <a th:href="@{/macronutrientscalc}" class="btn btn-primary stretched-link" th:text="#{page.home.menu.btn.go}">Přejít</a>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- footer -->
+        <footer class="pt-4 my-md-5 pt-md-5 border-top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 col-md">
+                        <small class="d-block mb-3 text-muted">Jakub Drábek © 2021</small>
+                    </div>
+                    <div class="col-6 col-md">
+                        <h5 th:text="#{footer.title.tools}">Nástroje</h5>
+                        <ul class="list-unstyled text-small">
+                            <li><a class="link-secondary" th:href="@{/macronutrientscalc}" th:text="#{page.calc.macro.title}">Kalkulátor makroživin</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-6 col-md">
+                        <h5 th:text="#{footer.title.cooperation}">Spolupráce</h5>
+                        <ul class="list-unstyled text-small">
+                        </ul>
+                    </div>
+                    <div class="col-6 col-md">
+                        <h5 th:text="#{footer.title.about}">O stránkách</h5>
+                        <ul class="list-unstyled text-small">
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </body>
+</html>

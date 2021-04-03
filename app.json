@@ -1,0 +1,5 @@
+{
+  "name": "FitCalc",
+  "description": "FitCalc by Jakub Drabek",
+  "addons": [ "heroku-postgresql" ]
+}

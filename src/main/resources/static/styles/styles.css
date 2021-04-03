@@ -1,0 +1,9 @@
+form .error {
+    font-style: italic;
+    color: red;
+    display: block;
+}
+
+#imgLogo {
+    fill: white;
+}

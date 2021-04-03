@@ -1,0 +1,518 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>FitCalc</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link href="webjars/bootstrap/5.0.0-beta2/css/bootstrap.min.css" rel="stylesheet" />
+        <link th:href="@{/styles/jBox.all.min.css}" rel="stylesheet" />
+        <link th:href="@{/styles/styles.css}" rel="stylesheet" />
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+        <script th:src="@{/js/jBox.all.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/5.0.0-beta2/js/bootstrap.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/5.0.0-beta2/js/bootstrap.bundle.min.js}"></script>
+    </head>
+    <body>
+
+        <header class="p-3 mb-3 border-bottom">
+            <div class="container">
+                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                    <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
+                        <img id="imgLogo" src="#" th:src="@{/img/icons/icon_heart.svg}" alt="FitCalc" width="30" height="24" class="d-inline-block align-middle" />
+                        <strong>FitCalc</strong>
+                    </a>
+
+                    <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                        <!--li><a href="#" class="nav-link px-2 link-secondary">Nástroje</a></li>
+                        <li><a href="#" class="nav-link px-2 link-dark">Inventory</a></--li>
+                        <li><a href="#" class="nav-link px-2 link-dark">Customers</a></li>
+                        <li><a href="#" class="nav-link px-2 link-dark">Products</a></li-->
+                    </ul>
+
+                    <div class="dropdown text-end">
+                        <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownLang" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img th:src="@{${'/img/icons/icon_flag_' + setLanguage.getCountry() + '.svg'}}" th:alt="${setLanguage.getCountry()}" height="24" />
+                        </a>
+                        <ul class="dropdown-menu text-small" aria-labelledby="dropdownLang">
+                            <li th:each="lang : ${@supportedLanguages}">
+                                <a th:class="${setLanguage.getLanguage() == lang.getLanguage()} ? 'dropdown-item disabled' : 'dropdown-item'" th:href="@{${'?lang=' + lang.getLanguage()}}">
+                                    <img th:src="@{${'/img/icons/icon_flag_' + lang.getCountry() + '.svg'}}" th:alt="${lang.getCountry()}" height="24" />
+                                    <span th:text="#{'lang.'+ ${lang.getLanguage()}}">Česky</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main role="main">
+
+            <div class="container">
+
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a th:href="@{/}" th:text="#{link.home}">Domů</a></li>
+                        <li class="breadcrumb-item active" aria-current="page" th:text="#{link.tools.macrocalc}">Kalkulátor makroživin</li>
+                    </ol>
+                </nav>
+
+                <div class="row">
+                    <div class="col-md">
+
+                    </div>
+                    <div class="col-md-6">
+
+                        <h4 class="mb-3" th:text="#{page.calc.macro.title}">Kalkulátor makroživin</h4>
+
+                        <form id="formUserData" th:object="${calcMacrosInput}" method="post" class="needs-validation" novalidate>
+
+                            <h5 class="mb-2" th:text="#{page.calc.macro.form.title1}">Základní údaje</h5>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    <label for="inputWeight" class="col-form-label" th:text="#{page.calc.macro.form.input.weight}">Váha</label>
+                                </div>
+                                <div class="col-9">
+                                    <div class="input-group">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="#{mark.kg}">kg</button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#" th:text="#{mark.kg}">kg</a></li>
+                                            <li><a class="dropdown-item disabled" href="#" th:text="#{mark.lb}">lb</a></li>
+                                        </ul>
+                                        <input name="inputWeight" type="number" min="10" max="200" class="form-control recalcInput" id="inputWeight" aria-describedby="inputWeight-help" th:field="*{weight}"
+                                               th:data-msg="#{page.calc.macro.form.input.weight.err}"/>
+                                    </div>
+                                    <div id="inputWeight-help" class="form-text text-muted" th:text="#{page.calc.macro.form.input.weight.help}">Váha v kilogramech na desetinná místa</div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    <label for="inputFat" class="col-form-label" th:text="#{page.calc.macro.form.input.fat}">Tuk</label>
+                                </div>
+                                <div class="col-9">
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="inputFat-addon">%</span>
+                                        <input name="inputFat" type="number" min="1" max="99" class="form-control recalcInput" id="inputFat" aria-describedby="helpFat" th:field="*{fat}"
+                                               th:data-msg="#{page.calc.macro.form.input.fat.err}"/>
+                                    </div>
+                                    <div id="inputFat-help" class="form-text text-muted" th:text="#{page.calc.macro.form.input.fat.help}">Procent tělesného tuku</div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    <label for="inputAge" class="col-form-label" th:text="#{page.calc.macro.form.input.age}">Věk</label>
+                                </div>
+                                <div class="col-9">
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="inputAge-addon">A.</span>
+                                        <input name="inputAge" type="number" min="0" max="150" class="form-control recalcInput" id="inputAge" aria-describedby="helpHeight" th:field="*{age}"
+                                               th:data-msg="#{page.calc.macro.form.input.age.err}"/>
+                                    </div>
+                                    <div id="inputAge-help" class="form-text text-muted" th:text="#{page.calc.macro.form.input.age.help}">Věk v rocích na desetinná místa</div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    <label for="inputHeight" class="col-form-label" th:text="#{page.calc.macro.form.input.height}">Výška</label>
+                                </div>
+                                <div class="col-9">
+                                    <div class="input-group">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="#{mark.cm}">cm</button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#" th:text="#{mark.cm}">cm</a></li>
+                                            <li><a class="dropdown-item disabled" href="#" th:text="#{mark.inch}">inch</a></li>
+                                        </ul>
+                                        <input name="inputHeight" type="number" min="50" max="250" class="form-control recalcInput" id="inputHeight" aria-describedby="helpHeight" th:field="*{height}"
+                                               th:data-msg="#{page.calc.macro.form.input.height.err}"/>
+                                    </div>
+                                    <div id="inputHeight-help" class="form-text text-muted" th:text="#{page.calc.macro.form.input.height.help}">Výška v cm</div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    <label for="inputSex" class="col-form-label" th:text="#{page.calc.macro.form.input.sex}">Pohlaví</label>
+                                </div>
+                                <div class="col-9">
+                                    <div class="input-group">
+                                        <select name="inputSex" class="form-select recalcInput" id="inputSex" th:field="*{sex}">
+                                            <option th:each="sexOpt : ${T(cz.jdrabek.fitcalc.model.ESex).values()}"
+                                                    th:value="${sexOpt}" th:text="${sexOpt.displayValue}"></option>
+                                        </select>
+                                    </div>
+                                    <div id="inputSex-help" class="form-text text-muted" th:text="#{page.calc.macro.form.input.sex.help}">Vaše pohlaví</div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    <label for="inputActivity" class="col-form-label" th:text="#{page.calc.macro.form.input.activityLevel}">Úroveň aktivity</label>
+                                </div>
+                                <div class="col-9">
+                                    <div class="input-group">
+                                        <select name="inputActivity" class="form-select recalcInput" id="inputActivity" aria-describedby="helpActivity" th:field="*{activity}">
+                                            <option th:each="activityOpt : ${T(cz.jdrabek.fitcalc.model.EActivityLevel).values()}"
+                                                    th:value="${activityOpt}" th:text="${activityOpt.getDisplayValue()} + ' - ' + ${activityOpt.getDescription()}"></option>
+                                        </select>
+                                    </div>
+                                    <small id="inputActivity-help" class="form-text text-muted" th:text="#{page.calc.macro.form.input.activityLevel.help}">Úroveň Vaší týdenní aktivity</small>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    <label for="inputSomatotype" class="col-form-label" th:text="#{page.calc.macro.form.input.somatotype}">Somatotyp</label>
+                                </div>
+                                <div class="col-8">
+                                    <div class="input-group">
+                                        <select name="inputSomatotype" class="form-select recalcInput" id="inputSomatotype" th:field="*{somatotype}">
+                                            <option th:each="activityOpt : ${T(cz.jdrabek.fitcalc.model.ESomatotype).values()}"
+                                                    th:value="${activityOpt}" th:text="${activityOpt.displayValue}"></option>
+                                        </select>
+                                    </div>
+                                    <small id="inputSomatotype-help" class="form-text text-muted" th:text="#{page.calc.macro.form.input.somatotype.help}">Váš somatotyp</small>
+                                </div>
+                                <div class="col-1">
+                                    <a href="#" id="hrefSomatotypeInfo">
+                                        <span class="icon-info-svg"></span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <h5 class="mb-2" th:text="#{page.calc.macro.form.title2}">Extra nastavení</h5>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    <label for="inputMaxProtein" class="col-form-label" th:text="#{page.calc.macro.form.input.maxProtein}">Bilkoviny za den</label>
+                                </div>
+                                <div class="col-9">
+                                    <div class="input-group">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="#{mark.g}">g</button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#" th:text="#{mark.g}">g</a></li>
+                                            <li><a class="dropdown-item disabled" href="#" th:text="#{mark.oz}">oz</a></li>
+                                        </ul>
+                                        <input name="inputMaxProtein" type="number" min="1" max="1000" class="form-control recalcInput" id="inputMaxProtein" aria-describedby="helpMaxProtein" th:field="*{maxProtein}"
+                                               th:data-msg="#{page.calc.macro.form.input.maxProtein.err}"/>
+                                    </div>
+                                    <div id="inputMaxProtein-help" class="form-text text-muted" th:text="#{page.calc.macro.form.input.maxProtein.help}">Maximální příjem bílkovin za den</div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    <label for="inputMaxCarbs" class="col-form-label" th:text="#{page.calc.macro.form.input.maxCarbohydrates}">Sacharidy za den</label>
+                                </div>
+                                <div class="col-9">
+                                    <div class="input-group">
+                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="#{mark.g}">g</button>
+                                        <ul class="dropdown-menu">
+                                            <li><a class="dropdown-item" href="#" th:text="#{mark.g}">g</a></li>
+                                            <li><a class="dropdown-item disabled" href="#" th:text="#{mark.oz}">oz</a></li>
+                                        </ul>
+                                        <input name="inputMaxCarbs" type="number" min="1" max="1000" class="form-control recalcInput" id="inputMaxCarbs" aria-describedby="helpMaxCarbs" th:field="*{maxCarbohydrates}"
+                                               th:data-msg="#{page.calc.macro.form.input.maxCarbohydrates.err}"/>
+                                    </div>
+                                    <div id="inputMaxCarbs-help" class="form-text text-muted" th:text="#{page.calc.macro.form.input.maxCarbohydrates.help}">Maximální příjem sacharidů za den</div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4"/>
+
+                            <div class="row mb-3">
+                                <div class="col-3">
+                                    <label for="inputSportGoal" class="col-form-label" th:text="#{page.calc.macro.form.input.sportGoal}">Sportovní cíl</label>
+                                </div>
+                                <div class="col-9">
+                                    <div class="input-group">
+                                        <select name="inputSportGoal" class="form-select recalcInput" id="inputSportGoal" th:field="*{sportGoal}">
+                                            <option th:each="activityOpt : ${T(cz.jdrabek.fitcalc.model.ESportGoal).values()}"
+                                                    th:value="${activityOpt}" th:text="${activityOpt.displayValue}"></option>
+                                        </select>
+                                    </div>
+                                    <div id="inputSportGoal-help" class="form-text text-muted" th:text="#{page.calc.macro.form.input.sportGoal.help}">Váš sportovní cíl</div>
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn-success" id="btnSubmit" th:text="#{page.calc.macro.form.btn.submit}">Spočítat</button>
+
+                        </form>
+
+                    </div>
+                    <div class="col-md">
+
+                        <h5 class="mb-3" th:text="#{page.calc.macro.form.title3}">Vypočtené údaje</h5>
+
+                        <ul class="list-group mb-3" th:object="${calcMacrosOutput}">
+                            <li class="list-group-item d-flex justify-content-between lh-sm">
+                                <div>
+                                     <span class="infoTooltip" th:title="#{page.calc.macro.results.lbm.help}">
+                                         <span class="icon-info-svg"></span>
+                                         <span th:text="#{page.calc.macro.results.lbm}">LBM</span>
+                                    </span>
+                                </div>
+                                <span class="text-muted" id="tdLbm"></span>
+                            </li>
+
+                            <li class="list-group-item d-flex justify-content-between lh-sm">
+                                <div>
+                                     <span class="infoTooltip" th:title="#{page.calc.macro.results.bmr.help}">
+                                         <span class="icon-info-svg"></span>
+                                         <span th:text="#{page.calc.macro.results.bmr}">BMR</span>
+                                    </span>
+                                </div>
+                                <span class="text-muted" id="tdBmr"></span>
+                            </li>
+
+                            <li class="list-group-item d-flex justify-content-between lh-sm">
+                                <div>
+                                     <span class="infoTooltip" th:title="#{page.calc.macro.results.tdee.help}">
+                                        <span class="icon-info-svg"></span>
+                                        <span th:text="#{page.calc.macro.results.tdee}">TDEE</span>
+                                    </span>
+                                </div>
+                                <span class="text-muted" id="tdTdee"></span>
+                            </li>
+
+                            <li class="list-group-item d-flex justify-content-between lh-sm">
+                                <div>
+                                     <span class="infoTooltip" th:title="#{page.calc.macro.results.tdee2.help}">
+                                        <span class="icon-info-svg"></span>
+                                        <span th:text="#{page.calc.macro.results.tdee2}">TDEE2</span>
+                                    </span>
+                                </div>
+                                <span class="text-muted" id="tdTdee2"></span>
+                            </li>
+
+                            <li class="list-group-item list-group-item-secondary d-flex justify-content-between lh-sm">
+                                <div>
+                                     <span class="infoTooltip" th:title="#{page.calc.macro.results.tdee3.help}">
+                                        <span class="icon-info-svg"></span>
+                                        <span th:text="#{page.calc.macro.results.tdee3}">TDEE3</span>
+                                    </span>
+                                </div>
+                                <span class="text-muted" id="tdTdee3"></span>
+                            </li>
+
+                        </ul>
+
+                        <ul class="list-group mb-3">
+                            <li class="list-group-item list-group-item-secondary d-flex justify-content-between lh-sm">
+                                <div>
+                                     <span class="infoTooltip" th:title="#{page.calc.macro.results.bmi.help}">
+                                         <span id="hrefBMIInfo" class="icon-info-svg"></span>
+                                         <span th:text="#{page.calc.macro.results.bmi}">BMI</span>
+                                    </span>
+                                </div>
+                                <span class="text-muted" id="tdBMI"></span>
+                            </li>
+                        </ul>
+
+                        <h5 class="mb-3" th:text="#{page.calc.macro.form.title4}">Doporučený denní příjem</h5>
+
+                        <ul class="list-group mb-3">
+                            <li class="list-group-item d-flex justify-content-between lh-sm">
+                                <span th:text="#{page.calc.macro.protein}">Bílkoviny</span>
+                                <span class="text-muted" id="tdProteinIncome"></span>
+                            </li>
+
+                            <li class="list-group-item d-flex justify-content-between lh-sm">
+                                <span th:text="#{page.calc.macro.carbs}">Sacharidy</span>
+                                <span class="text-muted" id="tdCarbsIncome"></span>
+                            </li>
+
+                            <li class="list-group-item d-flex justify-content-between lh-sm">
+                                <span th:text="#{page.calc.macro.fat}">Tuky</span>
+                                <span class="text-muted" id="tdFatIncome"></span>
+                            </li>
+                        </ul>
+
+                        <br />
+
+                        <div class="d-flex p-2 justify-content-center">
+                            <span class="text-muted" th:text="#{txt.donate}">Podpořte nás:</span>
+                        </div>
+                        <div class="d-flex p-2 justify-content-center">
+                            <form action="https://www.paypal.com/donate" method="post" target="_top">
+                                <input type="hidden" name="business" value="VMULRQPD9NP2A" />
+                                <input type="hidden" name="item_name" value="Podpora na dalsi rozvoj a vyvoj aplikaci" />
+                                <input type="hidden" name="currency_code" value="CZK" />
+                                <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+                                <img alt="" src="https://www.paypal.com/en_CZ/i/scr/pixel.gif" width="1" height="1" />
+                            </form>
+                        </div>
+
+                        <br />
+
+                        <div class="d-flex p-2 justify-content-center">
+                            <span class="text-muted" th:text="#{txt.recomended}">Doporučujeme:</span>
+                        </div>
+                        <a href="https://www.myprotein.cz/referrals.list?applyCode=JAKUB-R11M" target="_blank" rel="noopener noreferrer" >
+                            <img th:src="@{/img/logo_myprotein.png}" class="img-fluid img-thumbnail" alt="MyProtein" />
+                        </a>
+
+                    </div>
+                </div>
+
+            </div> <!-- /container -->
+
+        </main>
+
+        <!-- modals -->
+        <!-- SOMATOTYPE modal -->
+        <div class="modal fade" id="modalSomatotype" tabindex="-1" role="dialog" aria-labelledby="modalSomatotypeLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalSomatotypeLabel" th:text="#{page.calc.macro.modal.somatotype.title}">Jak určit somatotyp</h5>
+                    </div>
+                    <div class="modal-body">
+                        <p th:text="#{page.calc.macro.modal.somatotype.common}">Základní tři typy jsou:</p>
+                        <img src="img/img_somatotypes.jpg" alt="Somatotypes" class="rounded mx-auto d-block"/>
+                        <br />
+                        <b th:text="#{page.calc.macro.modal.somatotype.ectomorph.title}">Ektomorf</b>
+                        <p th:text="#{page.calc.macro.modal.somatotype.ectomorph.text}">
+                            Převažují znaky křehkosti. Slabé kosti, velmi slabé svalstvo. Ramena jsou skleslá. Trup je relativně krátký, končetiny relativně dlouhé, postava není vždy vysoká. Břicho bývá ploché. Bederní lordóza na rozdíl od mezomorfa je nepatrná a vysoko umístěná, hrudní kyfóza je větší. Hrudník je relativně dlouhý ve srovnání s břichem. Je plochý a úzký. Kulatá ramena jsou držena vpřed, křídlovitě odstávající lopatky jsou časté. Velmi slabá stehna a slabé paže. Prsty křehké a dlouhé. Krk bývá dlouhý, vadné držení hlavy a krku časté. Obličejová část hlavy je relativně malá ve srovnání s kraniální částí. Kůže bývá slabá a suchá.
+                        </p>
+                        <b th:text="#{page.calc.macro.modal.somatotype.mesomorph.title}">Mezomorf</b>
+                        <p th:text="#{page.calc.macro.modal.somatotype.mesomorph.text}">
+                            Převládá masivní svalstvo a kostra, hranatost těla. Ostrý svalový reliéf. Trup je těžký, svalnatý. Končetiny svalnaté, masivní, délka je různá. Silné i předloktí, zápěstí, ruka. Obvod hrudníku daleko převyšuje obvod břicha. Hrudník s rameny je široký, trup obyčejně vzpřímený, m. trapezius a deltoideus jsou mohutné a jasně se rýsují. Délka trupu a délka končetin není konstantním znakem u mezomorfa. Pánev je mohutná (Sheldon uvádí, že úzká pánev často zjištěná u svalově vyvinutých sportovců prozrazuje vedle mezomorfní komponenty i vyšší přítomnost třetí komponenty – ektomorfní). Paže a dolní končetiny jsou relativně stejně dlouhé. Velikost hlavy kolísá. Ramena široká, silná, klíční kosti jsou nápadné. Držení těla bývá dobré, bederní lordóza je někdy mírně zvětšena. Břišní stěna bývá pevná, nevystupuje. Hrudník je nápadný. <br />
+                        </p>
+                        <b th:text="#{page.calc.macro.modal.somatotype.endomorph.title}">Endomorf</b>
+                        <p th:text="#{page.calc.macro.modal.somatotype.endomorph.text}">
+                            Převažují zakulacené tvary a na pohmat měkké svalstvo s přemírou tuku. Břicho vystupuje před hrudníkem. Obvod pasu je větší než obvod hrudníku. Horní končetiny vynikají nad dolními. Krátký krk. Obrysy ramen zaoblené. Velká hlava. Svalový reliéf chybí. Krátké končetiny, slabé, poměrně malé ruce a nohy. Trup je relativně krátký. Kůže je měkká.' +
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnCloseSomatotypeModal" th:text="#{txt.close}">Zavřít</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BMI modal -->
+        <div class="modal fade" id="modalBMI" tabindex="-1" role="dialog" aria-labelledby="modalBMILabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalBMILabel" th:text="#{page.calc.macro.modal.bmi.title}">Co to je BMI</h5>
+                    </div>
+                    <div class="modal-body">
+                        <p th:text="#{page.calc.macro.modal.bmi.text1}">
+                            BMI neboli Body Mass Index ukazuje poměr vaší váhy k výšce. Podle výpočtu BMI pak zjistíte, zda je vaše aktuální váha ideální, nebo by bylo dobré ji pozměnit. V tabulce najdete svůj věk, přiřadíte výsledek BMI, a zařadíte se tak do 1 z 5 váhových kategorií.
+                        </p>
+                        <p th:text="#{page.calc.macro.modal.bmi.text2}">
+                            Pokud by vám vycházela podle BMI například podváha nebo nadváha, určitě je dobré poradit se se svým lékařem. Ten vám poradí, jak správně při redukci hmotnosti postupovat.
+                        </p>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col" th:text="#{txt.age}">Věk</th>
+                                    <th scope="col" th:text="#{txt.underweight}">Podváha</th>
+                                    <th scope="col" th:text="#{txt.optimalweight}">Optimální váha</th>
+                                    <th scope="col" th:text="#{txt.overweight}">Nadváha</th>
+                                    <th scope="col" th:text="#{txt.obesity}">Obezita</th>
+                                    <th scope="col" th:text="#{txt.severeobesity}">Silná obezita</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>18 - 24</td>
+                                    <td>&lt; 19</td>
+                                    <td>19 - 24</td>
+                                    <td>24 - 29</td>
+                                    <td>29 - 39</td>
+                                    <td>&gt; 39</td>
+                                </tr>
+                                <tr>
+                                    <td>25 - 34</td>
+                                    <td>&lt; 20</td>
+                                    <td>20 - 25</td>
+                                    <td>25 - 30</td>
+                                    <td>30 - 40</td>
+                                    <td>&gt; 40</td>
+                                </tr>
+                                <tr>
+                                    <td>35 - 44</td>
+                                    <td>&lt; 21</td>
+                                    <td>21 - 26</td>
+                                    <td>26 - 31</td>
+                                    <td>31 - 41</td>
+                                    <td>&gt; 41</td>
+                                </tr>
+                                <tr>
+                                    <td>45 - 54</td>
+                                    <td>&lt; 22</td>
+                                    <td>22 - 27</td>
+                                    <td>27 - 32</td>
+                                    <td>32 - 42</td>
+                                    <td>&gt; 42</td>
+                                </tr>
+                                <tr>
+                                    <td>55 - 64</td>
+                                    <td>&lt; 23</td>
+                                    <td>23 - 28</td>
+                                    <td>28 - 33</td>
+                                    <td>33 - 43</td>
+                                    <td>&gt; 43</td>
+                                </tr>
+                                <tr>
+                                    <td>65 +</td>
+                                    <td>&lt; 24</td>
+                                    <td>24 - 29</td>
+                                    <td>29 - 34</td>
+                                    <td>34 - 44</td>
+                                    <td>&gt; 44</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="btnCloseBMIModal" th:text="#{txt.close}">Zavřít</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- footer -->
+        <footer class="pt-4 my-md-5 pt-md-5 border-top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 col-md">
+                        <small class="d-block mb-3 text-muted">Jakub Drábek © 2021</small>
+                    </div>
+                    <div class="col-6 col-md">
+                        <h5 th:text="#{footer.title.tools}">Nástroje</h5>
+                        <ul class="list-unstyled text-small">
+                            <li><a class="link-secondary" href="#" th:text="#{page.calc.macro.title}">Kalkulátor makroživin</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-6 col-md">
+                        <h5 th:text="#{footer.title.cooperation}">Spolupráce</h5>
+                        <ul class="list-unstyled text-small">
+                        </ul>
+                    </div>
+                    <div class="col-6 col-md">
+                        <h5 th:text="#{footer.title.about}">O stránkách</h5>
+                        <ul class="list-unstyled text-small">
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Load React. -->
+        <!-- Note: when deploying, replace "development.js" with "production.min.js". -->
+        <!--script src="https://unpkg.com/react@17/umd/react.production.min.js" crossorigin></script-->
+        <!--script-- src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js" crossorigin></script-->
+        <script th:src="@{/js/scripts.js}"></script>
+    </body>
+</html>
