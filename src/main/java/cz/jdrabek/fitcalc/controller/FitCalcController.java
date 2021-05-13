@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import cz.jdrabek.fitcalc.entities.CalcMacrosInputEntity;
 import cz.jdrabek.fitcalc.entities.CalcMacrosOutputEntity;
+import cz.jdrabek.fitcalc.model.EHeightUnit;
+import cz.jdrabek.fitcalc.model.EWeightUnits;
 import cz.jdrabek.fitcalc.services.localization.LocalizationService;
 
 /**
@@ -34,6 +36,11 @@ public class FitCalcController {
         model.addAttribute("calcMacrosInput", calcMacrosInputEntity);
         model.addAttribute("calcMacrosOutput", calcMacrosOutputEntity);
         model.addAttribute("setLanguage", localizationService.getSetLanguage());
+
+        model.addAttribute("basicWeightUnits", LocalizationService.isUsedImperialUnits(localizationService.getSetLanguage()) ? EWeightUnits.LB : EWeightUnits.KG);
+        model.addAttribute("smallWeightUnits", LocalizationService.isUsedImperialUnits(localizationService.getSetLanguage()) ? EWeightUnits.OZ : EWeightUnits.G);
+        model.addAttribute("heightUnits", LocalizationService.isUsedImperialUnits(localizationService.getSetLanguage()) ? EHeightUnit.IN : EHeightUnit.CM);
+
         return "macronutrients_calc";
     }
 

@@ -1,13 +1,12 @@
 package cz.jdrabek.fitcalc.services.localization;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.env.Environment;
@@ -20,7 +19,7 @@ import cz.jdrabek.fitcalc.exception.FitCalcRuntimeException;
  *
  * @author jdrabek
  */
-@Service
+@Service("localizationService")
 public class LocalizationService {
 
     private static final Locale DEFAULT_LOCALE = new Locale("cs", "CZ");
@@ -51,6 +50,10 @@ public class LocalizationService {
     @Bean("setLanguage")
     public Locale getSetLanguage() {
         return supportedLanguages.get(LocaleContextHolder.getLocale().getLanguage());
+    }
+
+    public static boolean isUsedImperialUnits(Locale setLanguage) {
+        return Locale.ENGLISH.getLanguage().equals(setLanguage.getLanguage());
     }
 
     public static Locale getDefaultLanguage() {

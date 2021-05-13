@@ -49,41 +49,51 @@ $(document).ready(function () {
         const activityLevel = $('#inputActivity').val();
         const somatotype = $('#inputSomatotype').val();
         const sportGoal = $('#inputSportGoal').val();
-
         const maxProtein = parseFloat($('#inputMaxProtein').val());
         const maxCarbohydrates = parseFloat($('#inputMaxCarbs').val());
 
-        if (weight > 0 && fat > 0 && age > 0 && height > 0) {
-            const lbm = weight * (100 - fat) / 100;
-            const bmr = sex === 'MAN' ? 66 + (13.7 * lbm) + (5 * height) - (6.8 * age)
-                : 655 + (9.6 * lbm) + (1.8 * height) - (4.7 * age);
+        const weightUnit = $('#btnWeight').html();
+        const heightUnit = $('#btnHeight').html();
+        const maxProteinUnit = $('#btnMaxProtein').html();
+        const maxCarbsUnit = $('#btnMaxCarbs').html();
+
+        // convert to standard units
+        const weightVal = weightUnit === 'lb' ? weight * 0.45359237 : weight;
+        const heightVal = heightUnit === 'in' ? height * 2.54 : height;
+        const maxProteinVal = maxProteinUnit === 'oz' ? maxProtein * 28.3495231 : maxProtein;
+        const maxCarbsVal = maxCarbsUnit === 'oz' ? maxCarbohydrates * 28.3495231 : maxCarbohydrates;
+
+        if (weightVal > 0 && fat > 0 && age > 0 && heightVal > 0) {
+            const lbm = weightVal * (100 - fat) / 100;
+            const bmr = sex === 'MAN' ? 66 + (13.7 * lbm) + (5 * heightVal) - (6.8 * age)
+                : 655 + (9.6 * lbm) + (1.8 * heightVal) - (4.7 * age);
             const tdee = bmr * activityLevelMap[activityLevel];
             const tdee2 = tdee * somatotypeMap[somatotype];
             const tdee3 = tdee2 * sportGoalMap[sportGoal];
 
             let proteinIncome = lbm * proteinIncomes[sex][sportGoal];
-            if (maxProtein > 0 && proteinIncome > maxProtein) {
-                proteinIncome = maxProtein;
+            if (maxProteinVal > 0 && proteinIncome > maxProteinVal) {
+                proteinIncome = maxProteinVal;
             }
 
             let carbsIncome = ((tdee3 - (proteinIncome * 4)) * 0.65) / 4;
-            if (maxCarbohydrates > 0 && carbsIncome > maxCarbohydrates) {
-                carbsIncome = maxCarbohydrates;
+            if (maxCarbsVal > 0 && carbsIncome > maxCarbsVal) {
+                carbsIncome = maxCarbsVal;
             }
 
             const fatIncome = (tdee3 - (carbsIncome * 4) - (proteinIncome * 4)) / 9;
 
-            const bmi = weight / ((height/100) * (height/100));
+            const bmi = weightVal / ((heightVal/100) * (heightVal/100));
 
-            $('#tdLbm').html(`${lbm.toFixed(2)} kg`);
+            $('#tdLbm').html(`${lbm.toFixed(2)} kg / ${(lbm * 2.20462262).toFixed(2)} lb`);
             $('#tdBmr').html(`${bmr.toFixed()} kCal`);
             $('#tdTdee').html(`${tdee.toFixed()} kCal`);
             $('#tdTdee2').html(`${tdee2.toFixed()} kCal`);
             $('#tdTdee3').html(`${tdee3.toFixed()} kCal`);
 
-            $('#tdProteinIncome').html(`${proteinIncome.toFixed()} g`);
-            $('#tdCarbsIncome').html(`${carbsIncome.toFixed()} g`);
-            $('#tdFatIncome').html(`${fatIncome.toFixed()} g`);
+            $('#tdProteinIncome').html(`${proteinIncome.toFixed()} g / ${(proteinIncome * 0.0352739619).toFixed(4)} oz`);
+            $('#tdCarbsIncome').html(`${carbsIncome.toFixed()} g / ${(carbsIncome * 0.0352739619).toFixed(4)} oz`);
+            $('#tdFatIncome').html(`${fatIncome.toFixed()} g / ${(fatIncome * 0.0352739619).toFixed(4)} oz`);
             $('#tdBMI').html(`${bmi.toFixed(2)}`);
         }
     }
@@ -123,6 +133,41 @@ $(document).ready(function () {
 
     $('#btnCloseBMIModal').on('click', function () {
         $('#modalBMI').modal('hide');
+    });
+
+    $(".dropdown-menu li a").click(function() {
+        $(this).parents(".dropdown").find('.btn').html($(this).text());
+        $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
+
+        // change min / max
+        const input = $(this).parents(".dropdown").find('.recalcInput');
+        const inputId = input.attr('id');
+
+        if (inputId === 'inputWeight') {
+            const btnVal = $('#btnWeight').text();
+            input.attr({
+                "min" : btnVal === 'lb' ? "22" : "10",
+                "max" : btnVal === 'lb' ? "441" : "200",
+            });
+        } else if (inputId === 'inputHeight') {
+            const btnVal = $('#btnHeight').text();
+            input.attr({
+                "min" : btnVal === 'in' ? "20" : "50",
+                "max" : btnVal  === 'in' ? "99" : "250",
+            });
+        } else if (inputId === 'inputMaxProtein') {
+            const btnVal = $('#btnMaxProtein').text();
+            input.attr({
+                "max" : btnVal  === 'oz' ? "36" : "1",
+            });
+        } else if (inputId === 'inputMaxCarbs') {
+            const btnVal = $('#btnMaxCarbs').text();
+            input.attr({
+                "max" : btnVal  === 'oz' ? "36" : "1",
+            });
+        }
+
+        validateAndCalc();
     });
 
 });

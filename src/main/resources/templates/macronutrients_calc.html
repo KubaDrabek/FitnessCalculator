@@ -5,15 +5,15 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+        <script th:src="@{/js/jBox.all.min.js}"></script>
+        <script th:src="@{/webjars/bootstrap/5.0.0-beta2/js/bootstrap.bundle.min.js}"></script>
+
         <link href="webjars/bootstrap/5.0.0-beta2/css/bootstrap.min.css" rel="stylesheet" />
         <link th:href="@{/styles/jBox.all.min.css}" rel="stylesheet" />
         <link th:href="@{/styles/styles.css}" rel="stylesheet" />
 
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
-        <script th:src="@{/js/jBox.all.min.js}"></script>
-        <script th:src="@{/webjars/bootstrap/5.0.0-beta2/js/bootstrap.min.js}"></script>
-        <script th:src="@{/webjars/bootstrap/5.0.0-beta2/js/bootstrap.bundle.min.js}"></script>
     </head>
     <body>
 
@@ -77,13 +77,16 @@
                                     <label for="inputWeight" class="col-form-label" th:text="#{page.calc.macro.form.input.weight}">Váha</label>
                                 </div>
                                 <div class="col-9">
-                                    <div class="input-group">
-                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="#{mark.kg}">kg</button>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#" th:text="#{mark.kg}">kg</a></li>
-                                            <li><a class="dropdown-item disabled" href="#" th:text="#{mark.lb}">lb</a></li>
+                                    <div class="input-group dropdown">
+                                        <button id="btnWeight" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                                th:text="#{${'mark.' + basicWeightUnits.getMark()}}">kg</button>
+                                        <ul class="dropdown-menu" aria-labelledby="btnWeight">
+                                            <li th:each="unit : ${T(cz.jdrabek.fitcalc.model.EWeightUnits).getBasicUnits()}">
+                                                <a th:class="dropdown-item" href="#" th:text="#{${'mark.' + unit.getMark()}}">#</a>
+                                            </li>
                                         </ul>
-                                        <input name="inputWeight" type="number" min="10" max="200" class="form-control recalcInput" id="inputWeight" aria-describedby="inputWeight-help" th:field="*{weight}"
+                                        <input name="inputWeight" type="number" min="10" max="200"
+                                               class="form-control recalcInput" id="inputWeight" aria-describedby="inputWeight-help" th:field="*{weight}"
                                                th:data-msg="#{page.calc.macro.form.input.weight.err}"/>
                                     </div>
                                     <div id="inputWeight-help" class="form-text text-muted" th:text="#{page.calc.macro.form.input.weight.help}">Váha v kilogramech na desetinná místa</div>
@@ -123,11 +126,13 @@
                                     <label for="inputHeight" class="col-form-label" th:text="#{page.calc.macro.form.input.height}">Výška</label>
                                 </div>
                                 <div class="col-9">
-                                    <div class="input-group">
-                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="#{mark.cm}">cm</button>
+                                    <div class="input-group dropdown">
+                                        <button id="btnHeight" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                                th:text="#{${'mark.' + heightUnits.getMark()}}">cm</button>
                                         <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#" th:text="#{mark.cm}">cm</a></li>
-                                            <li><a class="dropdown-item disabled" href="#" th:text="#{mark.inch}">inch</a></li>
+                                            <li th:each="unit : ${T(cz.jdrabek.fitcalc.model.EHeightUnit).values()}">
+                                                <a th:class="dropdown-item" href="#" th:text="#{${'mark.' + unit.getMark()}}">#</a>
+                                            </li>
                                         </ul>
                                         <input name="inputHeight" type="number" min="50" max="250" class="form-control recalcInput" id="inputHeight" aria-describedby="helpHeight" th:field="*{height}"
                                                th:data-msg="#{page.calc.macro.form.input.height.err}"/>
@@ -193,11 +198,13 @@
                                     <label for="inputMaxProtein" class="col-form-label" th:text="#{page.calc.macro.form.input.maxProtein}">Bilkoviny za den</label>
                                 </div>
                                 <div class="col-9">
-                                    <div class="input-group">
-                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="#{mark.g}">g</button>
+                                    <div class="input-group dropdown">
+                                        <button id="btnMaxProtein" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                                th:text="#{${'mark.' + smallWeightUnits.getMark()}}">g</button>
                                         <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#" th:text="#{mark.g}">g</a></li>
-                                            <li><a class="dropdown-item disabled" href="#" th:text="#{mark.oz}">oz</a></li>
+                                            <li th:each="unit : ${T(cz.jdrabek.fitcalc.model.EWeightUnits).getSmallUnits()}">
+                                                <a th:class="dropdown-item" href="#" th:text="#{${'mark.' + unit.getMark()}}">#</a>
+                                            </li>
                                         </ul>
                                         <input name="inputMaxProtein" type="number" min="1" max="1000" class="form-control recalcInput" id="inputMaxProtein" aria-describedby="helpMaxProtein" th:field="*{maxProtein}"
                                                th:data-msg="#{page.calc.macro.form.input.maxProtein.err}"/>
@@ -211,11 +218,13 @@
                                     <label for="inputMaxCarbs" class="col-form-label" th:text="#{page.calc.macro.form.input.maxCarbohydrates}">Sacharidy za den</label>
                                 </div>
                                 <div class="col-9">
-                                    <div class="input-group">
-                                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" th:text="#{mark.g}">g</button>
+                                    <div class="input-group dropdown">
+                                        <button id="btnMaxCarbs" class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"
+                                                th:text="#{${'mark.' + smallWeightUnits.getMark()}}">g</button>
                                         <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#" th:text="#{mark.g}">g</a></li>
-                                            <li><a class="dropdown-item disabled" href="#" th:text="#{mark.oz}">oz</a></li>
+                                            <li th:each="unit : ${T(cz.jdrabek.fitcalc.model.EWeightUnits).getSmallUnits()}">
+                                                <a th:class="dropdown-item" href="#" th:text="#{${'mark.' + unit.getMark()}}">#</a>
+                                            </li>
                                         </ul>
                                         <input name="inputMaxCarbs" type="number" min="1" max="1000" class="form-control recalcInput" id="inputMaxCarbs" aria-describedby="helpMaxCarbs" th:field="*{maxCarbohydrates}"
                                                th:data-msg="#{page.calc.macro.form.input.maxCarbohydrates.err}"/>
