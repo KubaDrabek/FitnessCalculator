@@ -13,7 +13,7 @@ import cz.jdrabek.fitcalc.model.EWeightUnits;
 import cz.jdrabek.fitcalc.services.localization.LocalizationService;
 
 /**
- * TODO jakub popis
+ * Basic controller
  *
  * @author jdrabek
  */
